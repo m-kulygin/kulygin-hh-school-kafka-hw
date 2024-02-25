@@ -17,14 +17,16 @@ public class KafkaProducer {
     this.kafkaTemplate = kafkaTemplate;
   }
 
+  // К каждому исключению (сбою) добавляем информационное сообщение, чтобы можно было
+  // распознать тип сбоя извне, и действовать исходя из этого.
   public void send(String topic, String payload) {
     if (random.nextInt(100) < 10) {
-      throw new RuntimeException();
+      throw new RuntimeException("FAIL"); // тотальный сбой - даже не успели ничего обработать
     }
     LOGGER.info("send to kafka, topic {}, payload {}", topic, payload);
     kafkaTemplate.send(topic, payload);
     if (random.nextInt(100) < 2) {
-      throw new RuntimeException();
+      throw new RuntimeException("SUCCESS"); // средний сбой - в принципе успели отправить сообщение
     }
   }
 }
